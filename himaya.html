@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenangan Himaya - Album Galeri Foto</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        warm: {
+                            50: '#fdfbf7',
+                            100: '#f7f2eb',
+                            200: '#efe4d3',
+                            300: '#e2cfb4',
+                            400: '#d1b28c',
+                            500: '#be9366',
+                            600: '#a3774e',
+                            700: '#835c3c',
+                            800: '#6c4a34',
+                            900: '#583c2e',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fdfbf7;
+            color: #4a3b32;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .font-serif-title {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f7f2eb;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1b28c;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #be9366;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased">
+
+    <div>
+        <!-- Navigation / Header -->
+        <header class="sticky top-0 z-30 glass-card border-b border-warm-200/60 shadow-sm transition-all duration-300">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-warm-500 text-white flex items-center justify-center shadow-md">
+                        <i class="fa-solid me-0.5 fa-heart text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-serif-title text-2xl font-bold tracking-wide text-warm-900">Himaya</span>
+                        <span class="text-xs block text-warm-600 font-medium tracking-wider uppercase">Gallery Archive</span>
+                    </div>
+                </div>
+
+                <button id="btnOpenUploadModal" class="bg-warm-700 hover:bg-warm-800 text-white px-5 py-2.5 rounded-full font-medium text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 transform active:scale-95">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Tambah Foto</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="relative py-12 md:py-16 bg-gradient-to-b from-warm-100/70 to-warm-50/20 overflow-hidden border-b border-warm-200/40">
+            <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+                <span class="inline-block text-xs font-semibold uppercase tracking-widest text-warm-600 bg-warm-200/60 px-3.5 py-1.5 rounded-full mb-4">
+                    Abadi Dalam Galeri
+                </span>
+                <h1 class="font-serif-title text-4xl sm:text-5xl md:text-6xl font-bold text-warm-900 leading-tight mb-4">
+                    Kenangan Indah <span class="italic text-warm-600 font-normal">Himaya</span>
+                </h1>
+                <p class="text-base sm:text-lg text-warm-700 max-w-2xl mx-auto font-normal leading-relaxed">
+                    Setiap momen indah dan berharga tersimpan dengan rapi di sini. Unggah dan abadikan kenangan terbaik agar bisa dikenang kapan saja.
+                </p>
+                
+                <!-- Counter & Quick Stats -->
+                <div class="mt-8 flex justify-center items-center gap-6 text-sm text-warm-700">
+                    <div class="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-xl shadow-sm border border-warm-200/50">
+                        <i class="fa-regular fa-image text-warm-600"></i>
+                        <span>Total: <strong id="totalPhotosCount" class="text-warm-900">0</strong> Foto</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Container -->
+        <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            
+            <!-- Filter / Search Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+                <h2 class="font-serif-title text-2xl font-bold text-warm-900 flex items-center gap-2">
+                    <i class="fa-regular fa-images text-warm-600 text-xl"></i>
+                    <span>Koleksi Foto</span>
+                </h2>
+                
+                <div class="relative w-full sm:w-72">
+                    <input type="text" id="searchInput" placeholder="Cari keterangan atau tanggal..." 
+                        class="w-full pl-10 pr-4 py-2 bg-white border border-warm-200 rounded-full text-sm text-warm-900 placeholder-warm-400 focus:outline-none focus:ring-2 focus:ring-warm-500/50 focus:border-warm-500 transition-all shadow-sm">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-warm-400 text-sm"></i>
+                </div>
+            </div>
+
+            <!-- Empty State (No photos uploaded yet) -->
+            <div id="emptyState" class="hidden text-center py-16 px-4 bg-white/60 rounded-3xl border-2 border-dashed border-warm-200 max-w-lg mx-auto">
+                <div class="w-16 h-16 bg-warm-100 rounded-full flex items-center justify-center mx-auto mb-4 text-warm-500">
+                    <i class="fa-regular fa-folder-open text-2xl"></i>
+                </div>
+                <h3 class="font-serif-title text-xl font-bold text-warm-900 mb-1">Belum Ada Kenangan</h3>
+                <p class="text-sm text-warm-600 mb-6">Mulai isi album ini dengan mengunggah foto kenangan Himaya pertama Anda.</p>
+                <button id="btnEmptyStateUpload" class="bg-warm-700 hover:bg-warm-800 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-all shadow-md inline-flex items-center gap-2">
+                    <i class="fa-solid fa-upload text-xs"></i>
+                    <span>Unggah Foto Sekarang</span>
+                </button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Gallery Items dynamically inserted here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-warm-900 text-warm-200 py-8 border-t border-warm-800 mt-16">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="font-serif-title text-lg text-warm-100 mb-2">Kenangan Himaya</p>
+            <p class="text-xs text-warm-400">Tersimpan secara lokal & aman di browser Anda. Siap di-host di GitHub Pages.</p>
+            <p class="text-xs text-warm-500 mt-4">&copy; <span id="currentYear"></span> Himaya Gallery. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Modal Upload Foto -->
+    <div id="uploadModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl transform scale-95 transition-transform duration-300 border border-warm-100 relative max-h-[90vh] overflow-y-auto">
+            
+            <button id="btnCloseModal" class="absolute top-5 right-5 text-warm-400 hover:text-warm-700 w-8 h-8 rounded-full flex items-center justify-center bg-warm-50 hover:bg-warm-100 transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="mb-6">
+                <h3 class="font-serif-title text-2xl font-bold text-warm-900">Tambah Kenangan Baru</h3>
+                <p class="text-xs text-warm-600 mt-1">Pilih foto Himaya dan berikan deskripsi hangat.</p>
+            </div>
+
+            <form id="uploadForm" class="space-y-5">
+                <!-- File Input Area -->
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-warm-800 mb-2">Pilih Foto</label>
+                    <div id="dropZone" class="border-2 border-dashed border-warm-300 hover:border-warm-500 rounded-2xl p-6 text-center bg-warm-50/50 hover:bg-warm-50 transition-all cursor-pointer relative group">
+                        <input type="file" id="fileInput" accept="image/*" class="hidden">
+                        
+                        <div id="dropZoneContent">
+                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-warm-400 group-hover:text-warm-600 transition-colors mb-2"></i>
+                            <p class="text-sm font-medium text-warm-800">Klik untuk memilih foto</p>
+                            <p class="text-xs text-warm-500 mt-1">PNG, JPG, JPEG, atau WEBP</p>
+                        </div>
+
+                        <!-- Image Preview in Form -->
+                        <div id="imagePreviewContainer" class="hidden relative">
+                            <img id="imagePreview" src="" alt="Preview" class="max-h-48 rounded-xl mx-auto shadow-md object-cover">
+                            <button type="button" id="btnRemovePreview" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Title / Caption Input -->
+                <div>
+                    <label for="captionInput" class="block text-xs font-semibold uppercase tracking-wider text-warm-800 mb-2">Keterangan / Judul Foto</label>
+                    <textarea id="captionInput" rows="3" required placeholder="Ceritakan kenangan singkat dari foto ini..."
+                        class="w-full px-4 py-3 bg-warm-50/30 border border-warm-200 rounded-xl text-sm text-warm-900 placeholder-warm-400 focus:outline-none focus:ring-2 focus:ring-warm-500/50 focus:border-warm-500 transition-all resize-none"></textarea>
+                </div>
+
+                <!-- Date Input -->
+                <div>
+                    <label for="dateInput" class="block text-xs font-semibold uppercase tracking-wider text-warm-800 mb-2">Tanggal Kenangan</label>
+                    <input type="date" id="dateInput" required
+                        class="w-full px-4 py-2.5 bg-warm-50/30 border border-warm-200 rounded-xl text-sm text-warm-900 focus:outline-none focus:ring-2 focus:ring-warm-500/50 focus:border-warm-500 transition-all">
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button type="submit" id="btnSubmit" class="w-full bg-warm-700 hover:bg-warm-800 text-white font-medium py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bookmark text-sm"></i>
+                        <span>Simpan Ke Album</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal (Preview Full Size) -->
+    <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4">
+        <button id="btnCloseLightbox" class="absolute top-6 right-6 text-white/80 hover:text-white w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+
+        <div class="max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center">
+            <div class="relative overflow-hidden rounded-2xl shadow-2xl max-h-[75vh]">
+                <img id="lightboxImg" src="" alt="Kenangan Full" class="max-h-[75vh] w-auto max-w-full object-contain mx-auto">
+            </div>
+            
+            <div class="mt-4 text-center max-w-xl text-white">
+                <p id="lightboxCaption" class="text-base sm:text-lg font-medium leading-relaxed"></p>
+                <div class="flex items-center justify-center gap-2 text-xs text-warm-300 mt-2">
+                    <i class="fa-regular fa-calendar-days"></i>
+                    <span id="lightboxDate"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // ----------------------------------------------------
+        // INDEXEDDB DATABASE MANAGER (Storage yang persisten)
+        // ----------------------------------------------------
+        const DB_NAME = 'HimayaMemoriesDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'photos';
+        let db = null;
+
+        // Initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onupgradeneeded = (e) => {
+                    const dbInstance = e.target.result;
+                    if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
+                        const store = dbInstance.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                        store.createIndex('createdAt', 'createdAt', { unique: false });
+                    }
+                };
+
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+
+                request.onerror = (e) => {
+                    console.error('IndexedDB error:', e.target.error);
+                    reject(e.target.error);
+                };
+            });
+        }
+
+        // Save Photo to IndexedDB
+        function savePhotoToDB(photoObj) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.add(photoObj);
+
+                request.onsuccess = () => resolve();
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        // Get All Photos from IndexedDB
+        function getAllPhotosFromDB() {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.getAll();
+
+                request.onsuccess = () => {
+                    // Sort by date created or user selected date descending
+                    const sorted = request.result.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    resolve(sorted);
+                };
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        // Delete Photo from IndexedDB
+        function deletePhotoFromDB(id) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.delete(id);
+
+                request.onsuccess = () => resolve();
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        // ----------------------------------------------------
+        // APPLICATION STATE & DOM ELEMENTS
+        // ----------------------------------------------------
+        let photosList = [];
+        let selectedImageData = null;
+
+        const galleryGrid = document.getElementById('galleryGrid');
+        const emptyState = document.getElementById('emptyState');
+        const totalPhotosCount = document.getElementById('totalPhotosCount');
+        const searchInput = document.getElementById('searchInput');
+
+        // Modal Elements
+        const uploadModal = document.getElementById('uploadModal');
+        const btnOpenUploadModal = document.getElementById('btnOpenUploadModal');
+        const btnEmptyStateUpload = document.getElementById('btnEmptyStateUpload');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        const uploadForm = document.getElementById('uploadForm');
+
+        // Form File Elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const dropZoneContent = document.getElementById('dropZoneContent');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const btnRemovePreview = document.getElementById('btnRemovePreview');
+        const captionInput = document.getElementById('captionInput');
+        const dateInput = document.getElementById('dateInput');
+
+        // Lightbox Elements
+        const lightboxModal = document.getElementById('lightboxModal');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+        const lightboxDate = document.getElementById('lightboxDate');
+        const btnCloseLightbox = document.getElementById('btnCloseLightbox');
+
+        // Set default date input to today
+        dateInput.value = new Date().toISOString().split('T')[0];
+
+        // ----------------------------------------------------
+        // EVENT LISTENERS & MODAL CONTROL
+        // ----------------------------------------------------
+        btnOpenUploadModal.addEventListener('click', openModal);
+        btnEmptyStateUpload.addEventListener('click', openModal);
+        btnCloseModal.addEventListener('click', closeModal);
+
+        function openModal() {
+            uploadModal.classList.remove('opacity-0', 'pointer-events-none');
+            uploadModal.firstElementChild.classList.remove('scale-95');
+            uploadModal.firstElementChild.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            uploadModal.classList.add('opacity-0', 'pointer-events-none');
+            uploadModal.firstElementChild.classList.remove('scale-100');
+            uploadModal.firstElementChild.classList.add('scale-95');
+            resetForm();
+        }
+
+        // Close Modal when clicking outside
+        uploadModal.addEventListener('click', (e) => {
+            if (e.target === uploadModal) closeModal();
+        });
+
+        // File Selection Handlers
+        dropZone.addEventListener('click', (e) => {
+            if (e.target.closest('#btnRemovePreview')) return;
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        });
+
+        // Drag and Drop support
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-warm-500', 'bg-warm-100/50');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-warm-500', 'bg-warm-100/50');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-warm-500', 'bg-warm-100/50');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Silakan pilih file gambar yang valid.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                selectedImageData = event.target.result;
+                imagePreview.src = selectedImageData;
+                dropZoneContent.classList.add('hidden');
+                imagePreviewContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        btnRemovePreview.addEventListener('click', (e) => {
+            e.stopPropagation();
+            resetFileSelection();
+        });
+
+        function resetFileSelection() {
+            selectedImageData = null;
+            fileInput.value = '';
+            imagePreview.src = '';
+            imagePreviewContainer.classList.add('hidden');
+            dropZoneContent.classList.remove('hidden');
+        }
+
+        function resetForm() {
+            uploadForm.reset();
+            resetFileSelection();
+            dateInput.value = new Date().toISOString().split('T')[0];
+        }
+
+        // ----------------------------------------------------
+        // SUBMIT NEW PHOTO
+        // ----------------------------------------------------
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!selectedImageData) {
+                alert('Silakan pilih foto terlebih dahulu!');
+                return;
+            }
+
+            const newPhoto = {
+                id: 'himaya_' + Date.now(),
+                imageData: selectedImageData,
+                caption: captionInput.value.trim(),
+                date: dateInput.value,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await savePhotoToDB(newPhoto);
+                closeModal();
+                await loadPhotos();
+            } catch (err) {
+                console.error('Gagal menyimpan foto:', err);
+                alert('Terjadi kesalahan saat menyimpan foto.');
+            }
+        });
+
+        // ----------------------------------------------------
+        // LOAD & RENDER PHOTOS
+        // ----------------------------------------------------
+        async function loadPhotos() {
+            try {
+                photosList = await getAllPhotosFromDB();
+                renderGallery(photosList);
+            } catch (err) {
+                console.error('Gagal memuat foto:', err);
+            }
+        }
+
+        function renderGallery(photos) {
+            galleryGrid.innerHTML = '';
+            totalPhotosCount.textContent = photosList.length;
+
+            if (photos.length === 0) {
+                emptyState.classList.remove('hidden');
+                galleryGrid.classList.add('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            galleryGrid.classList.remove('hidden');
+
+            photos.forEach(photo => {
+                const formattedDate = formatDate(photo.date);
+
+                const card = document.createElement('div');
+                card.className = 'group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-warm-200/60 flex flex-col';
+                
+                card.innerHTML = `
+                    <div class="relative overflow-hidden aspect-[4/3] bg-warm-100 cursor-pointer">
+                        <img src="${photo.imageData}" alt="${escapeHtml(photo.caption)}" 
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                            <span class="w-10 h-10 rounded-full bg-white/90 text-warm-900 flex items-center justify-center shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-all">
+                                <i class="fa-solid fa-expand text-sm"></i>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5 flex flex-col justify-between flex-grow">
+                        <div>
+                            <div class="flex items-center gap-1.5 text-xs font-semibold text-warm-600 mb-2">
+                                <i class="fa-regular fa-calendar-days text-warm-500"></i>
+                                <span>${formattedDate}</span>
+                            </div>
+                            <p class="text-warm-900 text-sm font-medium line-clamp-3 leading-relaxed mb-4">
+                                ${escapeHtml(photo.caption)}
+                            </p>
+                        </div>
+                        
+                        <div class="pt-3 border-t border-warm-100 flex items-center justify-between text-xs text-warm-400">
+                            <span class="italic">Himaya Archive</span>
+                            <button class="btn-delete text-warm-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Hapus foto ini" data-id="${photo.id}">
+                                <i class="fa-regular fa-trash-can text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Open Lightbox when clicking image area
+                card.querySelector('.aspect-\\[4\\/3\\]').addEventListener('click', () => {
+                    openLightbox(photo);
+                });
+
+                // Delete Photo Event
+                card.querySelector('.btn-delete').addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (confirm('Apakah Anda yakin ingin menghapus foto kenangan ini?')) {
+                        await deletePhotoFromDB(photo.id);
+                        await loadPhotos();
+                    }
+                });
+
+                galleryGrid.appendChild(card);
+            });
+        }
+
+        // ----------------------------------------------------
+        // LIGHTBOX PREVIEW
+        // ----------------------------------------------------
+        function openLightbox(photo) {
+            lightboxImg.src = photo.imageData;
+            lightboxCaption.textContent = photo.caption;
+            lightboxDate.textContent = formatDate(photo.date);
+
+            lightboxModal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeLightbox() {
+            lightboxModal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        btnCloseLightbox.addEventListener('click', closeLightbox);
+        lightboxModal.addEventListener('click', (e) => {
+            if (e.target === lightboxModal) closeLightbox();
+        });
+
+        // ----------------------------------------------------
+        // SEARCH FILTER
+        // ----------------------------------------------------
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = photosList.filter(photo => {
+                const captionMatch = photo.caption.toLowerCase().includes(query);
+                const dateMatch = formatDate(photo.date).toLowerCase().includes(query);
+                return captionMatch || dateMatch;
+            });
+            renderGallery(filtered);
+        });
+
+        // ----------------------------------------------------
+        // UTILITY FUNCTIONS
+        // ----------------------------------------------------
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const dateObj = new Date(dateString);
+            return dateObj.toLocaleDateString('id-ID', options);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+
+        // ----------------------------------------------------
+        // INITIALIZATION
+        // ----------------------------------------------------
+        window.addEventListener('DOMContentLoaded', async () => {
+            await initDB();
+            await loadPhotos();
+        });
+    </script>
+</body>
+</html>
